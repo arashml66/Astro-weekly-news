@@ -280,8 +280,8 @@ from google.genai import types
 # =========================================================
 
 MODELS = [
-    "gemini-2.5-flash-lite",
-    "gemini-2.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.5-flash",
 ]
 
 response = None
