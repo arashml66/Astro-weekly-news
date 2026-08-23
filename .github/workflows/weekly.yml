@@ -1,0 +1,38 @@
+name: Weekly Astronomy Report
+
+on:
+  schedule:
+    # شنبه ساعت 06:17 UTC
+    - cron: "17 6 * * 6"
+
+  # امکان اجرای دستی
+  workflow_dispatch:
+
+jobs:
+
+  send-report:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run astronomy news bot
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python astro_news.py
