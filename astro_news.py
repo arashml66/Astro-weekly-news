@@ -11,15 +11,15 @@ FEEDS = [
     "https://www.universetoday.com/feed/",
 ]
 
-# جمع‌آوری اخبار هفته اخیر
-one_week_ago = datetime.now() - timedelta(days=7)
+# جمع‌آوری اخبار
 articles = []
 for url in FEEDS:
     try:
         feed = feedparser.parse(url)
         for entry in feed.entries[:15]:
             articles.append(f"- {entry.title}\n  {entry.link}\n  خلاصه: {entry.get('summary', '')[:300]}")
-    except: pass
+    except:
+        pass
 
 news_text = "\n\n".join(articles[:60])
 
