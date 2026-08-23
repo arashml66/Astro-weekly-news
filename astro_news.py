@@ -268,25 +268,85 @@ prompt = f"""
 """
 
 
-try:
+import time
+from google.genai import types
 
-    response = client.models.generate_content(
-        model="gemini-3.7-flash",
-        contents=prompt,
-        config={
-            "system_instruction": system_instruction,
-            "temperature": 0.4,
-            "max_output_tokens": 6000,
-        },
-    )
 
-    report = response.text
+# =========================================================
+# Gemini با Retry و مدل پشتیبان
+# =========================================================
 
-except Exception as e:
+MODELS = [
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash",
+]
+
+response = None
+last_error = None
+
+for model_name in MODELS:
+
+    print(f"🤖 Trying Gemini model: {model_name}")
+
+    for attempt in range(4):
+
+        try:
+
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.4,
+                    max_output_tokens=6000,
+                ),
+            )
+
+            print(
+                f"✅ Gemini پاسخ داد با مدل: {model_name}"
+            )
+
+            break
+
+        except Exception as e:
+
+            last_error = e
+
+            print(
+                f"⚠️ Gemini error "
+                f"(model={model_name}, "
+                f"attempt={attempt + 1}/4): {e}"
+            )
+
+            # قبل از تلاش بعدی صبر کن
+            if attempt < 3:
+                wait_time = 5 * (attempt + 1)
+
+                print(
+                    f"⏳ {wait_time} ثانیه صبر..."
+                )
+
+                time.sleep(wait_time)
+
+    if response is not None:
+        break
+
+
+if response is None:
 
     raise RuntimeError(
-        f"خطا در ارتباط با Gemini: {e}"
+        f"Gemini پس از چند تلاش نتوانست پاسخ دهد. "
+        f"آخرین خطا: {last_error}"
     )
+
+
+report = response.text
+
+if not report:
+
+    raise RuntimeError(
+        "Gemini پاسخ خالی برگرداند."
+)
 
 
 if not report:
