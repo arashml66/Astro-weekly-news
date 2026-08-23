@@ -1,8 +1,9 @@
 name: Weekly Astronomy Report
+
 on:
   schedule:
-    - cron: '0 6 * * 6'   # هر شنبه ساعت ۹:۳۰ صبح به وقت ایران (۶:۰۰ UTC)
-  workflow_dispatch:       # دکمه اجرای دستی برای تست
+    - cron: '0 6 * * 6'
+  workflow_dispatch:
 
 jobs:
   send-report:
